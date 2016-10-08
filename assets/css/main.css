@@ -1802,13 +1802,13 @@
 			}
 
 		.image.featured {
-			display: block;
+			/*display: block;*/
 			margin: 0 0 2em 0;
 		}
 
 			.image.featured img {
-				display: block;
-				width: 100%;
+			    /*display: block;*/
+			    max-height: 8em;
 			}
 
 /* Icon */
