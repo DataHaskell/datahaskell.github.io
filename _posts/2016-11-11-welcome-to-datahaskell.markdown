@@ -10,10 +10,10 @@ We’re rebooting dataHaskell! We've collected learnings from the previous dataH
 This is still a work in progress with many kinks in both our processes and our software but we are committed to delivering on these goals in the medium to long term.
 
 ## What we're doing differently
-* **Single happy path**: We're starting off by building a single, robust happy path that tackles common data science tasks. We will constantly revisit 
+* **Single happy path**: We're starting off by building a single, robust happy path that tackles common data science tasks.
 * **Reducing time-to-first-run**: Thoroughly document setup/environment and work with maintainers to fix pain points.
 * **Better documentation**: Produce and encourage thorough documentation using the diataxis framework. Documentation should be runnable so it doesn't drift from implementation.
-* **Clearer ownership**: Named maintainers per repo, issue triaging, and a clear “how to become a maintainer/contributor” guide per repo.
+* **Clearer ownership**: Named maintainers per repo, issue triaging, and a clear “how to become a maintainer/contributor” guide per repo. We would like to build continuity into the ecosystem.
 * **Community**: A predictable heartbeat (e.g., monthly community call, fortnightly “help-wanted” sweep, monthly release notes) for collaboration.
 
 
