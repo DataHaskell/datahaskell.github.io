@@ -1,0 +1,49 @@
+---
+layout: post
+---
+
+<body class="index">
+
+		<div class="posts">
+            {% for post in site.posts %}
+                <article class="post">
+
+                <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+
+                <div class="entry">
+                    {{ post.excerpt }}
+                </div>
+
+                <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+                </article>
+            {% endfor %}
+        </div>
+
+		<!-- Footer -->
+		<footer id="footer">
+
+			<ul class="icons">
+				<li><a href="http://twitter.com/datahaskell" class="icon circle fa-twitter"><span
+							class="label">Twitter</span></a></li>
+				<li><a href="https://github.com/datahaskell" class="icon circle fa-github"><span
+							class="label">Github</span></a></li>
+			</ul>
+
+			<ul class="copyright">
+				<li>Copyright &copy; 2025, all the <strong>dataHaskell</strong> contributors</li>
+				<!--  li>Design: <a href="http://html5up.net">HTML5 UP</a></li -->
+			</ul>
+
+		</footer>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.dropotron.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/jquery.scrollgress.min.js"></script>
+	<script src="assets/js/skel.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+	<script src="assets/js/main.js"></script>
+
+</body>
