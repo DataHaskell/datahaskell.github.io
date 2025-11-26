@@ -33,14 +33,7 @@ The Jupyter stack looks like this:
 - **Kernel** (language backend): Actually executes your code.
 
 
-```
-┌───────────────┐................┌───────────────┐................┌───────────────┐                 
-│...............│..WebSockets....│...............│.....ZeroMQ.....|...............│
-│..JupyterLab /.│───────────────>│....Jupyter....│───────────────>│....Language...│
-│....Notebook...│................│....Server.....│................│.....Kernel....│
-│...............│................│...............│................│...............│
-└───────────────┘................└───────────────┘................└───────────────┘
-```
+![Simple Architecture Diagram of the Jupyter Stack](/images/jupyter_architecture.png)
 
 The frontend and the kernel do not share memory. They talk over five distinct logical channels, each responsible for a specific type of message exchange:
 
