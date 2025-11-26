@@ -34,12 +34,12 @@ The Jupyter stack looks like this:
 
 
 ```
-┌───────────────┐                ┌───────────────┐                ┌───────────────┐                 
-│               │  WebSockets    │               │     ZeroMQ     │               │
-│  JupyterLab / │───────────────>│    Jupyter    │───────────────>│    Language   │
-│    Notebook   │                │    Server     │                │     Kernel    │
-│               │                │               │                │               │
-└───────────────┘                └───────────────┘                └───────────────┘
+┌───────────────┐................┌───────────────┐................┌───────────────┐                 
+│...............│  WebSockets    │...............│     ZeroMQ     │...............│
+│..JupyterLab /.│───────────────>│....Jupyter....│───────────────>│....Language...│
+│....Notebook...│................│....Server.....│................│.....Kernel....│
+│...............│................│...............│................│...............│
+└───────────────┘................└───────────────┘................└───────────────┘
 ```
 
 The frontend and the kernel do not share memory. They talk over five distinct logical channels, each responsible for a specific type of message exchange:
