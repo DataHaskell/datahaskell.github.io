@@ -152,3 +152,5 @@ The full notebook is available to explore in the [DataHaskell playground](https:
 We are currently working on turning this workflow into a dedicated library. We're working with developers to see what data and charts will be the most useful for understanding performance. Our goal is to provide a seamless bridge between the GHC RTS and high-level analysis tools. Along with the library, we will be providing guides on how to use these data-science techniques to diagnose specific performance pathologies.
 
 As always watch this space and if this sort of work is interesting to you, hop over to the DataHaskell discord to get in on the action.
+
+_Contributors: Michael Chavinda, Jireh Tan, Tony Day, Laurent P. René de Cotret_
