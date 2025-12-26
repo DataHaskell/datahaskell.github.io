@@ -5,8 +5,6 @@ date:   2025-11-25 20:36:38 +0100
 categories: blog
 ---
 
-### Overview
-
 For developers integrating Haskell into data science workflows or interactive documentation, the Jupyter notebook is the standard interface. Currently, there are two primary ways to run Haskell in Jupyter: [IHaskell](https://github.com/IHaskell/IHaskell) and [xeus-haskell](https://github.com/jupyter-xeus/xeus-haskell).
 
 While both achieve the same end user experience (executing Haskell code in cells) their internal architectures represent fundamentally different engineering trade-offs:

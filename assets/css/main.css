@@ -1569,7 +1569,7 @@
 		color: black;
 		font-family: 'Lato', sans-serif;
 		font-size: 15pt;
-		font-weight: 300;
+		font-weight: 400;
 		letter-spacing: 0.025em;
 		line-height: 1.75em;
 	}
@@ -1589,7 +1589,7 @@
 		}
 
 	strong, b {
-		font-weight: 400;
+		font-weight: 900;
 	}
 
 	p, ul, ol, dl, table, blockquote {
@@ -1598,7 +1598,7 @@
 
 	h1, h2, h3, h4, h5, h6 {
 		color: inherit;
-		font-weight: 300;
+		font-weight: 900;
 		line-height: 1.75em;
 		margin-bottom: 1em;
 		text-transform: uppercase;
@@ -2202,7 +2202,7 @@
 		}
 
 			#header h1 span {
-				font-weight: 300;
+				font-weight: 900;
 			}
 
 		#header nav {
