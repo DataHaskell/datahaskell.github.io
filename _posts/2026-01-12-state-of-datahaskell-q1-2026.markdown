@@ -29,7 +29,7 @@ We’re trying to balance both, but we’re leaning toward the second.
 
 When we say symbolic AI tooling, we mean tools that help you build and simplify interpretable models by searching over programs - not just fitting opaque parameters.
 
-Concretely, that includes things like: deature synthesis (automatically generating small, meaningful features from raw columns with constraints), interpretable model search (generating compact decision rules / trees / expressions that you can inspect, diff, and export), program optimization (simplifying or rewriting model expressions safely e.g., removing dead branches, canonicalizing expressions, enforcing constraints like monotonicity).
+Concretely, that includes things like: feature synthesis (automatically generating small, meaningful features from raw columns with constraints), interpretable model search (generating compact decision rules / trees / expressions that you can inspect, diff, and export), program optimization (simplifying or rewriting model expressions safely e.g., removing dead branches, canonicalizing expressions, enforcing constraints like monotonicity).
 
 This is an area where Haskell’s strengths (typed DSLs, algebraic modelling, compositionality) can shine without trying to replicate the entire Python ecosystem overnight.
 
