@@ -129,10 +129,11 @@ blockquote {
  */
 pre,
 code {
-    font-size: 15px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 14px;
     border: 1px solid $grey-color-light;
     border-radius: 3px;
-    background-color: #eef;
+    background-color: #f6f8fa;
 }
 
 code {
@@ -142,6 +143,7 @@ code {
 pre {
     padding: 8px 12px;
     overflow-x: auto;
+    max-width: 100%;
 
     > code {
         border: 0;

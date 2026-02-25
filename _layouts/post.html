@@ -12,4 +12,19 @@ layout: default
     {{ content }}
   </div>
 
+  <nav class="post-nav">
+    {% if page.previous.url %}
+      <div class="post-nav-prev">
+        <span class="post-nav-label">&larr; Previous</span>
+        <a href="{{ page.previous.url | prepend: site.baseurl }}">{{ page.previous.title }}</a>
+      </div>
+    {% endif %}
+    {% if page.next.url %}
+      <div class="post-nav-next">
+        <span class="post-nav-label">Next &rarr;</span>
+        <a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title }}</a>
+      </div>
+    {% endif %}
+  </nav>
+
 </article>

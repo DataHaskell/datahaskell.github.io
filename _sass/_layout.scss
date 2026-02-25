@@ -217,6 +217,16 @@
     margin-bottom: $spacing-unit;
     padding: 1em;
 
+    ul {
+        list-style: disc;
+        padding-left: 1.25em;
+    }
+
+    ol {
+        list-style: decimal;
+        padding-left: 1.25em;
+    }
+
     h2 {
         font-size: 32px;
 
@@ -239,5 +249,61 @@
         @include media-query($on-laptop) {
             font-size: 18px;
         }
+    }
+}
+
+
+
+/**
+ * Post navigation
+ */
+.post-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: $spacing-unit 0;
+    border-top: 1px solid $grey-color-light;
+    margin-top: $spacing-unit;
+    font-size: $small-font-size;
+
+    .post-nav-prev,
+    .post-nav-next {
+        max-width: 48%;
+    }
+
+    .post-nav-next {
+        text-align: right;
+        margin-left: auto;
+    }
+
+    .post-nav-label {
+        color: $grey-color;
+        display: block;
+        margin-bottom: 4px;
+    }
+}
+
+
+
+/**
+ * Blog listing
+ */
+.post-card {
+    padding: 1.5em;
+    margin-bottom: 1.5em;
+    border: 1px solid $grey-color-light;
+    border-radius: 8px;
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 0.25em;
+    }
+
+    .post-meta {
+        margin-bottom: 0.75em;
+    }
+
+    .read-more {
+        display: inline-block;
+        margin-top: 0.5em;
     }
 }

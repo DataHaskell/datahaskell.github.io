@@ -1,53 +1,19 @@
 ---
-layout: post
+layout: default
+title: Blog
 ---
 
-<body class="index">
+<div class="blog-listing">
+  <h1 class="page-heading">Blog</h1>
 
-		<div class="posts">
-            {% for post in site.posts %}
-				<div style="padding: 1em; margin: 1em; border-style: solid; border-radius: 1em; border-color: grey; border-width: 0.1em;">
-					<hr>
-					<article class="post">
-
-					<h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
-
-					<div class="entry">
-						{{ post.excerpt }}
-					</div>
-
-					<a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-					</article>
-					<hr>
-				</div>
-            {% endfor %}
-        </div>
-
-		<!-- Footer -->
-		<footer id="footer">
-
-			<ul class="icons">
-				<li><a href="http://twitter.com/datahaskell" class="icon circle fa-twitter"><span
-							class="label">Twitter</span></a></li>
-				<li><a href="https://github.com/datahaskell" class="icon circle fa-github"><span
-							class="label">Github</span></a></li>
-			</ul>
-
-			<ul class="copyright">
-				<li>Copyright &copy; 2025, all the <strong>dataHaskell</strong> contributors</li>
-				<!--  li>Design: <a href="http://html5up.net">HTML5 UP</a></li -->
-			</ul>
-
-		</footer>
-
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.dropotron.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/jquery.scrollgress.min.js"></script>
-	<script src="assets/js/skel.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-	<script src="assets/js/main.js"></script>
-
-</body>
+  {% for post in site.posts %}
+    <div class="post-card">
+      <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
+      <p class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</p>
+      <div class="entry">
+        {{ post.excerpt }}
+      </div>
+      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+    </div>
+  {% endfor %}
+</div>
