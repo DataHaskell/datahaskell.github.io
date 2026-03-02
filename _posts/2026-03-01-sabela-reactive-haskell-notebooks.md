@@ -7,7 +7,7 @@ categories: blog
 
 ## Overview
 
-Sabela is a reactive notebook for Haskell. It supports rich output, including LaTeX, SVG, Markdown, and HTML. The name is derived from the [Ndebele](https://en.wikipedia.org/wiki/Northern_Ndebele_language) word meaning "to respond." The project has two purposes. Firstly, it is an attempt to design and create a modern Haskell notebook where reactivity is a first class concern. Secondly, it is an experiment ground for ideas I've had about package/environment management in Haskell notebooks (a significant pain point in IHaskell).
+Sabela is a markdown-first reactive notebook for Haskell. It supports rich output, including LaTeX, SVG, Markdown, and HTML. The name is derived from the [Ndebele](https://en.wikipedia.org/wiki/Northern_Ndebele_language) word meaning "to respond." The project has two purposes. Firstly, it is an attempt to design and create a modern Haskell notebook where reactivity is a first class concern. Secondly, it is an experiment ground for ideas I've had about package/environment management in Haskell notebooks (a significant pain point in IHaskell).
 
 This document outlines the architectural and design decisions that went into the evaluation model of the initial [Sabela prototype](https://github.com/DataHaskell/sabela). The central architectural decision Sabela makes is to evaluate input in a GHCi subprocess rather than implementing a REPL via GHC API and HIE Bios.
 
