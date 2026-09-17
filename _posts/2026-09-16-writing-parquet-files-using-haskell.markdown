@@ -39,7 +39,7 @@ Parquet files are a series of row groups followed by metadata at the end of the 
 
 Each row group is a collection of column chunks, each of which contain the same number of rows. Each column chunk is a series of data pages. Since each column chunk is a just a series of pages, and each row group is a series of column chunks, the final file simply looks like a series of pages from each column interleaved with each other. We're able to make sense of it all by using the metadata to identify the offset and size of each row group and column chunk.
 
-A data page is where we actually store all of our data. It consists of first the page metadata, describing its encoding, the number values, the statistics, among other things. There are actually [two](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L699) [versions](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L752) of the data page with subtle differences. 
+A data page is where we actually store all of our data. It consists of first the page metadata, describing its encoding, the number of values, the statistics, among other things. There are actually [two](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L699) [versions](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L752) of the data page with subtle differences.
 
 Next we have definition levels and repetition levels. Definition levels and repetition levels are partially why Parquet files compress so well. A detailed description of definition levels and repetition levels is out of scope for this article; refer to the [Dremel paper](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36632.pdf) for that. For our purposes we currently only support writing definition levels up to one to denote nullable values. 
 
@@ -82,7 +82,7 @@ data MemoryBuffer = MemoryBuffer
     }
 ```
 
-For our implementation we use pinned `ByteArray`s, as we would like to convert it into a `Ptr Word8` when its time to flush into either another buffer, for example when flushing a page buffer into a column chunk buffer, or into a file, as we would when flushing a row group to file -- more on these two cases later when we discuss the structure of the Writer.
+For our implementation we use pinned `ByteArray`s, as we would like to convert it into a `Ptr Word8` when its time to flush into either another buffer, for example when flushing a page buffer into a column chunk buffer, or into a file, as we would when flushing a row group to file.
 
 Using pinned `ByteArray`s results in a slight complication when trying to grow the memory buffer. We must not use the `grow` function provided by `Data.Primitive`, instead we must allocate a new pinned ByteArray and allow the old one to be GCed. One might be worried about heap fragmentation because a single pinned object in a 4KB GHC block can keep the whole block alive but  we expect that our buffers will tend to be much larger than 4KB. Furthermore grows ought to be rare especially after the first few Pages and the first RowGroup.
 
