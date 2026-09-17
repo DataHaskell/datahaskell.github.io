@@ -12,18 +12,20 @@ We implemented a parquet writer in [DataHaskell/Dataframe](https://github.com/Da
 ```haskell
 import qualified DataFrame as D
 import qualified DataFrame.Functions as F
+import DataFrame (as, (|>))
 
-sales <- D.readParquet "sales_data.parquet"
-
-sales
-    |> D.groupBy ["product"]
-    |> D.aggregate [ F.sum (F.col @Int "amount") `as` "total"
-                   , F.count (F.col @Int "amount") `as` "orders"
-                   ]
-    |> D.writeParquet "total_orders.parquet"
+main = do
+    sales <- D.readParquet "sales_data.parquet"
+    
+    sales
+        |> D.groupBy ["product"]
+        |> D.aggregate [ F.sum (F.col @Int "amount") `as` "total"
+                       , F.count (F.col @Int "amount") `as` "orders"
+                       ]
+        |> D.writeParquet "total_orders.parquet"
 ```
 
-If you need more fine-grained control over the parquet file you'll want to use `writeParquetWithOptions`. Read on to to see what those options are and how they affect the final file.
+If you need more fine-grained control over the parquet file you'll want to use `writeParquetWithOptions`. Read on to see what those options are and how they affect the final file.
 
 ## Parquet For Haskell
 
@@ -35,15 +37,15 @@ The parquet format trades simplicity for efficient storage and querying of the d
 
 Feel free to skip this section if you already know the structure of a parquet file. 
 
-Parquet files are a series of row groups followed by metadata at the end of the file that describes exactly the layout of the file by recording the offsets of each row group as well as the offsets of the content of each row group. It also contains useful information like statistics and bloom filters so that, for example, a reader / query planner can decide whether or not to read a specific row group.
+Parquet files are a series of row groups followed by metadata at the end of the file with information that allows readers to locate relevant column chunks and pages. It also contains useful information like statistics and bloom filters so that, for example, a reader / query planner can decide whether or not to read a specific row group.
 
-Each row group is a collection of column chunks, each of which contain the same number of rows. Each column chunk is a series of data pages. Since each column chunk is a just a series of pages, and each row group is a series of column chunks, the final file simply looks like a series of pages from each column interleaved with each other. We're able to make sense of it all by using the metadata to identify the offset and size of each row group and column chunk.
+Each row group is a collection of column chunks, each of which contain the same number of rows. Each column chunk is a series of data pages. Since each column chunk is a series of pages, and each row group is a series of column chunks, the final file simply looks like a series of pages from each column one after the other. We're able to make sense of it all by using the metadata to identify the offset and size of each row group and column chunk.
 
 A data page is where we actually store all of our data. It consists of first the page metadata, describing its encoding, the number of values, the statistics, among other things. There are actually [two](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L699) [versions](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift#L752) of the data page with subtle differences.
 
-Next we have definition levels and repetition levels. Definition levels and repetition levels are partially why Parquet files compress so well. A detailed description of definition levels and repetition levels is out of scope for this article; refer to the [Dremel paper](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36632.pdf) for that. For our purposes we currently only support writing definition levels up to one to denote nullable values. 
+Next we have definition levels and repetition levels. They're an inexpensive encoding of nullability and nested structure. A detailed description of definition levels and repetition levels is out of scope for this article; refer to the [Dremel paper](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36632.pdf) for that. For our purposes we currently only support writing definition levels up to one to denote nullable values. 
 
-Finally we have our actual [encoded](github.com/apache/parquet-format/blob/master/Encodings.md) and [compressed](https://github.com/apache/parquet-format/blob/master/Compression.md) data (depending on which data page we're using we compress either just the data or both the definition/repetition levels and the data). The encoding is determined per page, while compression is determined per column chunk. 
+Finally we have our actual [encoded](https://github.com/apache/parquet-format/blob/master/Encodings.md) and [compressed](https://github.com/apache/parquet-format/blob/master/Compression.md) data (depending on which data page we're using we compress either just the data or both the definition/repetition levels and the data). The encoding is determined per page, while compression is determined per column chunk. 
 
 ## The Implementation
 
@@ -67,7 +69,7 @@ data ParquetWriteOptions = ParquetWriteOptions
 
 Both `pageSize` and `rowGroupSize` are the target size in bytes of each page and each row group. But each column chunk in a row group must contain the same number of rows, and depending on the specific data being encoded, the encoding, and the compression algorithm we're using, each column chunk will hold a different number of rows before reaching the target size. The same holds true for each page. So how do we ensure our page size target, our row group size target, and have the same number of rows in each column chunk?
 
-We must consider both the target `pageSize` and `rowGroupSize` to be best effort; they could be somewhat above or below the target. We run our columns through batches of size `batchRows` and check the state of the row group after each batch. So each row group contains an integer multiple of `batchRows` rows. Pages also will contain an integer multiple of `subBatchRows` rows. Sub batching at the page level allows us to reduce the amount of IORef book-keeping we have to do after each write, granting us significant speedups.[^2]
+We must consider both the target `pageSize` and `rowGroupSize` to be best effort; they could be somewhat above or below the target. We run our columns through batches of size `batchRows` and check the state of the row group after each batch. So each row group contains an integer multiple of `batchRows` rows; pages also will contain an integer multiple of `subBatchRows` rows (with the exception of the final page and the final column chunk). Sub-batching at the page level allows us to reduce the amount of IORef book-keeping we have to do after each write, granting us significant speedups.[^2]
 
 ### Memory
 
@@ -82,7 +84,7 @@ data MemoryBuffer = MemoryBuffer
     }
 ```
 
-For our implementation we use pinned `ByteArray`s, as we would like to convert it into a `Ptr Word8` when its time to flush into either another buffer, for example when flushing a page buffer into a column chunk buffer, or into a file, as we would when flushing a row group to file.
+For our implementation we use pinned `ByteArray`s, as we would like to convert it into a `Ptr Word8` when it's time to flush into either another buffer, for example when flushing a page buffer into a column chunk buffer, or into a file, as we would when flushing a row group to file.
 
 Using pinned `ByteArray`s results in a slight complication when trying to grow the memory buffer. We must not use the `grow` function provided by `Data.Primitive`, instead we must allocate a new pinned ByteArray and allow the old one to be GCed. One might be worried about heap fragmentation because a single pinned object in a 4KB GHC block can keep the whole block alive but  we expect that our buffers will tend to be much larger than 4KB. Furthermore grows ought to be rare especially after the first few Pages and the first RowGroup.
 
@@ -176,7 +178,7 @@ writeBatch rowNum batchEnd
     | otherwise = do
         let count = min options.subBatchRows (batchEnd - rowNum)
         forM_ writerState.columnChunks (writeRows options scratchBuffer rowNum count)
-        modifyIORef options.rowNumberRef (+ count)
+        modifyIORef writerState.rowNumberRef (+ count)
         writeBatch (rowNum + count) batchEnd
         
 ```
@@ -186,7 +188,7 @@ The `scratchBuffer` is a re-usable buffer that we'll later use to assemble the p
 The internal workings of `writeRows` are somewhat similar to the `loop` we saw earlier.
 
 ```haskell
-rowWriterLoop !options !columnChunkState !end !size !position !row =
+rowWriterLoop !options !columnChunkState !end !size !position !row
     | row >= end = writeIORef columnChunkState.pageState.pageBuffer.positionRef position
     | position + options.pageSize > size = do
         let page = columnChunkState.pageState
@@ -197,7 +199,7 @@ rowWriterLoop !options !columnChunkState !end !size !position !row =
                                     options.pageSize
                                     ((end - row) * 64)
                     )
-        size' <- getSizeOfMutableArray arr'
+        size' <- getSizeOfMutableByteArray arr'
         rowWriterLoop options columnChunkState end size' position row
     | otherwise = do
         let page = columnChunkState.pageState
@@ -205,7 +207,7 @@ rowWriterLoop !options !columnChunkState !end !size !position !row =
         (position', notNull) <- encode page.pageBuffer position row
         when columnChunkState.nullable $
             pushDef page.definitionLevels (if notNull then 1 else 0)
-        rowWriterLoop options columnChunkState end size' position row
+        rowWriterLoop options columnChunkState end size position' (row + 1)
 ```
 
 Note that we only handle definition levels up to 1 for our writer and we don't support definition levels greater than 1 and repetition levels greater than 0 as, currently, we specifically only want to support dataframes which have flat schemas.
@@ -234,7 +236,6 @@ Currently optional metadata fields like statistics for columns/pages and bloom f
 Finally, currently all of our buffers live in memory while they wait to be flushed to disk. In memory constrained systems writing Parquet files that require particularly large pages/rowgroups, we may end up running out of memory (an entire row group must be held in memory in its entirety). So we plan to implement a two pass strategy where we use much smaller in memory buffers and write to on-disk temporary files instead of keeping data in memory. 
 
 ---
-
 
 [^0]: In this article when we speak of data we usually mean copious amounts of columnar data that one is wont to put in a dataframe.
 
@@ -267,4 +268,4 @@ Finally, currently all of our buffers live in memory while they wait to be flush
 
     It's unlikely we would need it, but should we ever desire writing to disk directly without the mediation of the kernel, in spite of the extra effort to make it cross platform, `O_DIRECT` beckons. The rabbit hole goes deeper when we consider multithreading and avoiding losing data due to a crash.
 
-[^4]: We say 'Effectful fold over the dataframe', but if you look at the code we don't actually use a `foldM`. Mostly the code is recursive and a `forM_` is used. This is the local minimum we landed on to make it convenient to do the batching and sub-batching required by the writer. However, the statement that it is an effectful fold is still accurate as `forM_` is itself a special kind of fold and folds are just a generalization of recursion (See Graham Hutton's paper "[A Tutorial on the Universality and Expressiveness of Fold](https://people.cs.nott.ac.uk/pszgmh/fold.pdf)")
+[^4]: We say 'Effectful fold over the dataframe', but if you look at the code we don't actually use a `foldM`. Mostly the code is recursive and a `forM_` is used. This is the local minimum we landed on to make it convenient to do the batching and sub-batching required by the writer. However, the statement that it is an effectful fold is still accurate as `forM_` is itself a special kind of fold and folds abstract over recursion (See Graham Hutton's paper "[A Tutorial on the Universality and Expressiveness of Fold](https://people.cs.nott.ac.uk/pszgmh/fold.pdf)")
