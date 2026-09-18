@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Writing Parquet Files Using Haskell"
-date:   2026-09-16 11:41:21 +0530
+date:   2026-09-18 11:41:21 +0530
 categories: blog
 author: Raghav Sharma
 ---
