@@ -7,7 +7,7 @@ author: Raghav Sharma
 ---
 
 
-We implemented a parquet writer in [DataHaskell/Dataframe](https://github.com/DataHaskell/dataframe). Using it is simple; you need only pass your dataframe into the `writeParquet` function which writes a parquet file with sane defaults for row group and page sizes. An example:
+We implemented a parquet writer in [DataHaskell/Dataframe](https://github.com/DataHaskell/dataframe). In the most common case it's very simple to use. You need only pass your dataframe into the `writeParquet` function which writes a parquet file with sane defaults. An example:
 
 ```haskell
 import qualified DataFrame as D
@@ -18,9 +18,9 @@ main = do
     sales <- D.readParquet "sales_data.parquet"
     
     sales
-        |> D.groupBy ["product"]
+        |> D.groupBy   ["product"]
         |> D.aggregate [ F.sum (F.col @Int "amount") `as` "total"
-                       , F.count (F.col @Int "amount") `as` "orders"
+                       , F.countAll `as` "orders"
                        ]
         |> D.writeParquet "total_orders.parquet"
 ```
