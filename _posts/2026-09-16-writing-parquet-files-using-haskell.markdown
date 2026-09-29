@@ -14,12 +14,14 @@ import qualified DataFrame as D
 import qualified DataFrame.Functions as F
 import DataFrame (as, (|>))
 
+$(D.declareColumnsFromParquetFile "sales_data.parquet")
+
 main = do
     sales <- D.readParquet "sales_data.parquet"
     
     sales
         |> D.groupBy   ["product"]
-        |> D.aggregate [ F.sum (F.col @Int "amount") `as` "total"
+        |> D.aggregate [ F.sum amount `as` "total"
                        , F.countAll `as` "orders"
                        ]
         |> D.writeParquet "total_orders.parquet"
